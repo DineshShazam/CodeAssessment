@@ -2,7 +2,7 @@ const Joi = require('joi');
 const {hash,verify} = require('../Handler/encrypt/encrypt');
 const { dbInstance } = require('../db_driver/dbDriver');
 const moment = require('moment');
-const { tokenGen, tokenVerify } = require('../Handler/JWT_Auth/jwt');
+const { tokenGen } = require('../Handler/JWT_Auth/jwt');
 const mailer = require('../Handler/Mailer/mailer');
 const jwt = require('jsonwebtoken');
 
@@ -23,8 +23,7 @@ exports.register = async (req,res) => {
     }
     const {userName,email,password,role} = req.body;
     const collection = process.env.AUTH_COLLECTIONS;
-    var db = dbInstance();
-    const result = await db.collection(collection).find({email}).toArray();
+    const result = await dbInstance().collection(collection).find({email}).toArray();
     if(result.length !== 0) {
         res.status(200).send('Email has been Already Regsitered');
         return;
@@ -55,15 +54,11 @@ exports.register = async (req,res) => {
                     <p>${process.env.CLIENT_URL}</p>    
                 `
         }
-
-        mailer(mailParams).then((sent) => {
-            res.status(200).json({
-                message:'Activation Mail Sent',
-                value:'success' 
-            })
-        }).catch((err) => {
-            res.status(400).send('Mail Not Sent, Please Contact your admin')
-        });
+        mailer(mailParams);
+        res.status(200).json({
+            message:'Activation Mail Sent',
+            value:'success' 
+        })
         
     }
 }
@@ -100,8 +95,7 @@ exports.activationRequest = async (req,res) => {
 
             decoded = {...decoded,Joineddate:moment().format('llll'),isActive:true};
             delete decoded['iat']
-            var db = dbInstance();
-            db.collection('users').insertOne(decoded,(err,result) => {
+            dbInstance().collection('users').insertOne(decoded,(err,result) => {
                 if(err) {
                     res.status(400).send('User Not Registered');
                     return;
@@ -128,9 +122,7 @@ exports.login = async (req,res) => {
     }
 
     const {email,password} = req.body;
-    var db = dbInstance();
-    console.log(email);
-    const userExist = await db.collection('users').find({email}).toArray();
+    const userExist = await dbInstance().collection('users').find({email}).toArray();
     if(userExist.length === 0) {
         res.status(403).send('Invalid Email');
         return;
