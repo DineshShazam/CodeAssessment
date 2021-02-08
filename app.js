@@ -4,7 +4,8 @@ const app = express();
 const cors = require('cors');
 const bodyParser = require('body-parser'); 
 app.use(bodyParser.json());
-const routes = require('./routes/index');
+const userRouter = require('./routes/userRoute');
+const adminRouter = require('./routes/adminRoute');
 const { connectToServer } = require('./db_driver/dbDriver');
 
 if(process.env.NODE_ENV == 'development') {
@@ -21,7 +22,8 @@ connectToServer((err,client) => {
 
     app.use(bodyParser.json());
 
-    app.use('/',routes);
+    app.use('/user',userRouter);
+    app.use('/admin',adminRouter);
 
     app.get('*',(req,res) => {
         res.status(500).json({

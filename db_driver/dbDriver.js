@@ -13,4 +13,4 @@ module.exports = {
   dbInstance: () => {
     return _db;
   }
-}
+} 

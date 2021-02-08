@@ -1,9 +1,9 @@
 const jwt = require('jsonwebtoken');
 const joi = require('joi');
 
-exports.tokenGen = (payload) => {
+exports.tokenGen = (payload,expires) => {
     return new Promise((resolve,reject) => {
-        jwt.sign(payload,process.env.SECRET_KEY,{expiresIn:process.env.EXPIRES},(err,token) => {
+        jwt.sign(payload,process.env.SECRET_KEY,{expiresIn:expires},(err,token) => {
             if(err) {
                 reject(new Error(`Token Creation error, ${err}`));
             }

@@ -38,7 +38,7 @@ exports.register = async (req,res) => {
         role
     }
 
-    const token = await tokenGen(params,'10m');
+    const token = await tokenGen(params,"5m");
 
     if(token) {
         const mailParams = {
@@ -47,7 +47,7 @@ exports.register = async (req,res) => {
             subject:'Account Activation Link',
             html:` 
                     <h1>Please use the following to activate your account</h1>
-                    <p>${process.env.CLIENT_URL}/activate/${token}</p>
+                    <p>${process.env.CLIENT_URL}/user/activate/${token}</p>
                     <hr />
                     <p>URL expires in 10 minutes</p>
                     <p>This email may containe sensetive information</p>
@@ -66,7 +66,7 @@ exports.register = async (req,res) => {
 exports.activationRequest = async (req,res) => {
     const tokenValidation = req.body;
    if(!tokenValidation) {
-       res.status(403).send('Token is Missing');
+       res.status(401).send('Token is Missing');
         return;
    }
         const token = tokenValidation;
@@ -77,32 +77,34 @@ exports.activationRequest = async (req,res) => {
         if(error) {
             const {TokenExpiredError} = error
             console.log(TokenExpiredError)
-            res.status(400).json({
-                message:'Invalid Token',
-                value:'error'
-            })
+            res.status(400).send('Invalid Token');
             return;
         }
         jwt.verify(token.activationToken,process.env.SECRET_KEY,(err,decoded) => {
-
+         
             if(err) {
-                console.log(err)
-                res.status(403).json({
-                    message:'Expired API Token'
-                })
+                res.status(401).send('URL has been Expired');
                 return;
             }
 
             decoded = {...decoded,Joineddate:moment().format('llll'),isActive:true};
             delete decoded['iat']
-            dbInstance().collection('users').insertOne(decoded,(err,result) => {
+            dbInstance().collection('users').insertOne(decoded,async (err,result) => {
                 if(err) {
                     res.status(400).send('User Not Registered');
                     return;
                 }
+                const {userName,email,role} = result;
+                const token = await tokenGen({
+                    userName,
+                    email,
+                    role
+                },"6h");
                 res.status(200).json({
-                    message:'User Registered Please Login',
-                    value:'success'
+                    message:`Welcome ${userName}`,
+                    value:{
+                        token
+                    }
                 })
             })
         })
@@ -124,18 +126,22 @@ exports.login = async (req,res) => {
     const {email,password} = req.body;
     const userExist = await dbInstance().collection('users').find({email}).toArray();
     if(userExist.length === 0) {
-        res.status(403).send('Invalid Email');
+        res.status(401).send('Invalid Email');
         return;
     }
     const {userName,encryptedData,saltkey} = userExist[0];
     const authBool = await verify(password,saltkey,encryptedData);
     if(authBool) {
+        const apiToken = await tokenGen({userName},"6hr");
         res.status(200).json({
             message:`Welcome ${userName}`,
-            value:userName
+            value:{
+                userName,
+                apiToken
+            }
         })
     } else {
-        res.status(403).send('Invalid Password');
+        res.status(401).send('Invalid Password');
     }
 
 }

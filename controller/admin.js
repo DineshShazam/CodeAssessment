@@ -1,4 +1,3 @@
-const { object } = require("joi");
 const Joi = require("joi");
 const { dbInstance } = require("../db_driver/dbDriver");
 const mailer = require("../Handler/Mailer/mailer");
@@ -6,21 +5,24 @@ const mailer = require("../Handler/Mailer/mailer");
 
 exports.listUsers = (req,res) => {
     //var db = dbInstance();
-    dbInstance().collection('users').find().toArray((err,result) => {
+    dbInstance().collection('users').find({}).toArray((err,result) => {
         if(err) {
             res.status(400).send('Unable to list the Users');
             return;
         }
-        const {_id,userName,email,role,JoinedDate,isActive} = result[0];
-        const userList = {
-            _id,
+      const value =  result.map((value) => {
+       const {_id:id,userName,email,role,Joineddate,isActive} = value;
+        return {
+            id,
             userName,
             email,
             role,
-            JoinedDate,
+            Joineddate,
             isActive
         }
-        res.status(200).json(userList);
+        })
+        
+        res.status(200).json(value);
     })
 }
 
