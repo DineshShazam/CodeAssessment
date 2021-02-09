@@ -29,9 +29,9 @@ const Login = ({location}) => {
     const onRegister = async (data,e) => {
       e.preventDefault();
         showLoading();
-        location.pathname === '/user/register' ? data.role = 'user' 
-        : location.pathname === '/admin/register' ? data.role = 'admin' 
-        : data.role = 'user'
+        location.pathname === '/user/register' ? data.role = 'User' 
+        : location.pathname === '/admin/register' ? data.role = 'Admin' 
+        : data.role = 'User'
         const res = await registerAPI(data);
         if (!res) { hideLoading(); return }
         hideLoading();

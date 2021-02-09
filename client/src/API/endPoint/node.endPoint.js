@@ -10,7 +10,7 @@ const axiosInstance = () => {
         token = null;
     }
 
-    const baseUrl = 'http://localhost:4004';
+    const baseUrl = 'http://localhost:5000';
 
     const AxiosInstance = axios.create({
         baseURL:baseUrl,

@@ -3,17 +3,21 @@ import './activation.css'
 import {useLocation} from 'react-router-dom'
 import { toast } from 'react-toastify';
 import { activateUser } from '../../API/apiActions/auth';
-
+import {useHistory} from 'react-router-dom';
 
 const AccountActivation =  () => {
 
     const location = useLocation();
-
-    const activationAccount = async () => {   
+    const history = useHistory(); 
+    
+    const activationAccount = async () => {  
+     
         const url = location.pathname;
-        const token = url.split("/").pop();
-        const res = await activateUser({activationToken:token});
+        const urlToken = url.split("/").pop();
+        const res = await activateUser({activationToken:urlToken});
         toast.success(res);
+        history.push('/home');
+       
     }
 
     return (

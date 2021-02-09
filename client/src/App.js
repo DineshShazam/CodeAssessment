@@ -7,21 +7,53 @@ import {Route,Switch,useHistory,Redirect,withRouter} from 'react-router-dom';
 import routes from './routes';
 import {isAdmin, isAuth} from './utils/isAuth';
 import Navbar from './Component/NavBar/navbar';
+import NotFound from './Component/NotFound/NotFound';
 
-const RenderRoute = ({role,...route}) => {
+
+const RenderRoute = ({...route}) => {
   const history = useHistory();
-
-  if(route.needsAuth && !isAuth()) {
+  console.log('private method called')
+  if(route.needsAuth && !isAuth().isLogged) {
+    console.log('push method called');
    history.push('/user/login');
+   return (
+     <div></div>
+   )
+  } else {
+    return (
+      <Route
+        path={route.path}
+        exact
+        render={(props) => <route.component {...props} />}
+      ></Route>
+    )
   }
 
-  return (
-    <Route
-      path={route.path}
-      exact
-      render={(props) => <route.component {...props} />}
-    ></Route>
-  )
+ 
+
+}
+
+const AdminRoute = ({role,...route}) => {
+  const history = useHistory();
+  console.log('admin method called');
+  if(route.needsAuth && !isAuth().isLogged && (isAdmin() === 'User' || isAdmin() === null)) {
+    console.log('Inside If')
+   history.push('/user/login');
+   return (
+     <div></div>
+   )
+  } else if(route.needsAuth && isAuth().isLogged && isAdmin() === 'Admin') {
+    console.log('Inside If 1')
+    console.log(isAdmin());
+    return (
+      <Route
+        path={route.path}
+        exact
+        render={(props) => <route.component {...props} />}
+      ></Route>
+    )
+  }
+  console.log('OutSide If ')
 
 }
 
@@ -33,19 +65,35 @@ function App({history}) {
     });
   },[])
 
-
   return (
     <div className="App">
-      
-      <Navbar/>
-
-      <Switch>
+     
+        <Navbar/>
+  
+      <Switch> 
         <Redirect exact from='/' to='/user/login' />
-        {
-          routes?.map((route,index) => (
-              <RenderRoute {...route} key={index} />
-          ))
-        }
+        {/* <Route path='/user/login' exact render={props => <Login {...props} />} />
+        <Route path='/user/register' exact render={props => <Login {...props} />} />
+        <Route path='/user/activate/:token' exact render={props => <AccountActivation {...props} />} /> */}
+
+              {
+              routes?.filter((val) => {
+                return val.role !== 'admin'
+              }).map((route,index) => (
+                <RenderRoute {...route} key={index} />
+              ))
+              }
+          
+          
+              {
+                routes?.filter((val) => {
+                  return val.role !== 'user'
+                }).map((route,index) => (
+                  <AdminRoute {...route} key={index} />
+                ))
+              }
+      
+        <Route component={NotFound} />
       </Switch>
 
 

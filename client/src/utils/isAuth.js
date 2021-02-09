@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken'
+import jwt_decode  from 'jwt-decode'
 
 export const isAuth = () => {
     const APItoken = localStorage.getItem('token');
@@ -17,11 +17,21 @@ export const isAuth = () => {
 
 export const isAdmin = () => {
     const APItoken = localStorage.getItem('token');
-    const decoded = jwt.decode(APItoken);
-    const {role} = decoded;
-    if(role) {
-        return role;
+    if(APItoken) {
+        const decoded = jwt_decode(APItoken);
+        const {role} = decoded;
+        if(role) {
+            return role;
+        } else {
+            return null;
+        }   
     } else {
-        return "";
-    }    
+        return null;
+    }
+     
+}
+
+export const logout = () => {
+    localStorage.clear('token');
+    window.location.href = '/user/login';
 }
