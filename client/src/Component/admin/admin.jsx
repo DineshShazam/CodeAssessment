@@ -33,7 +33,8 @@ export default function Admin() {
     
     console.log(newColumn);
     const updateRole = async (email,role) => {
-        const newRole = role === 'admin' ? 'User' : 'Admin'; 
+        const newRole = (role === 'Admin' ? 'User' : 'Admin'); 
+        console.log(newRole);
         const res = await updateRoleAPI({email,role:newRole});
         toast.success(res);
         userDataFetch();
@@ -42,7 +43,7 @@ export default function Admin() {
     const confirmation = (email,role) => {
         confirmAlert({
             title: 'Confirm To Submit',
-            message: `Are you sure to Update to ${(role === 'admin') ? 'User' : 'Admin' }`,
+            message: `Are you sure to Update to ${(role === 'Admin') ? 'User' : 'Admin' }`,
             buttons:[
                 {
                     label:'yes',
@@ -101,8 +102,8 @@ export default function Admin() {
                 title:"isActive",
                 field:"isActive",
                 render: rowData => rowData.isActive === true ? 
-                <Button onClick={(e) => userActivation(rowData.email,'deactivate')} variant="contained" color="primary">DeActivate User</Button> :
-                <Button onClick={(e) => userActivation(rowData.email,'activate')} variant="contained" color="primary">Activate User</Button>
+                <Button onClick={(e) => userActivation(rowData.email,'deactivate')} variant="contained" color="primary">DeActivate</Button> :
+                <Button onClick={(e) => userActivation(rowData.email,'activate')} variant="contained" color="primary">Activate</Button>
             }]}
             data={
                 users.map((val) => {

@@ -75,8 +75,7 @@ exports.activationRequest = async (req,res) => {
         }) 
         const {error} = schema.validate(token);
         if(error) {
-            const {TokenExpiredError} = error
-            console.log(TokenExpiredError)
+            //const {TokenExpiredError} = error
             res.status(400).send('Invalid Token');
             return;
         }
@@ -94,15 +93,15 @@ exports.activationRequest = async (req,res) => {
                     res.status(400).send('User Not Registered');
                     return;
                 }
-                const {userName,email,role} = result;
+                const {userName,role} = result;
                 const token = await tokenGen({
                     userName,
-                    email,
                     role
                 },"6h");
                 res.status(200).json({
                     message:`Welcome ${userName}`,
                     value:{
+                        role,
                         token
                     }
                 })
@@ -129,14 +128,15 @@ exports.login = async (req,res) => {
         res.status(401).send('Invalid Email');
         return;
     }
-    const {userName,encryptedData,saltkey} = userExist[0];
+    const {userName,role,encryptedData,saltkey} = userExist[0];
     const authBool = await verify(password,saltkey,encryptedData);
     if(authBool) {
-        const apiToken = await tokenGen({userName},"6hr");
+        const apiToken = await tokenGen({userName,role},"6hr");
         res.status(200).json({
             message:`Welcome ${userName}`,
             value:{
                 userName,
+                role,
                 apiToken
             }
         })

@@ -17,23 +17,25 @@ const routes = [
         title: 'Register',
         needsAuth:false
     },
-    { 
-        path:'/home',
-        component:Home,
-        title: 'Home',
-        needsAuth:true
-    },
     {
         path:'/user/activate/:token',
         component:AccountActivation,
         title: 'USer Activation',
         needsAuth:false
     },
+    { 
+        path:'/home',
+        component:Home,
+        title: 'Home',
+        role:'user',
+        needsAuth:true
+    },
     {
         path:'/admin/listUser',
         component:Admin,
         title:'List User',
-        needsAuth:false
+        role:'admin',
+        needsAuth:true
     }
 ]
 
