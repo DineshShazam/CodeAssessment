@@ -24,6 +24,7 @@ exports.register = async (req,res) => {
     const {userName,email,password,role} = req.body;
     const collection = process.env.AUTH_COLLECTIONS;
     const result = await dbInstance().collection(collection).find({email}).toArray();
+    console.log(result);
     if(result.length !== 0) {
         res.status(200).send('Email has been Already Regsitered');
         return;
@@ -79,22 +80,29 @@ exports.activationRequest = async (req,res) => {
             res.status(400).send('Invalid Token');
             return;
         }
-        jwt.verify(token.activationToken,process.env.SECRET_KEY,(err,decoded) => {
+        jwt.verify(token.activationToken,process.env.SECRET_KEY,async (err,decoded) => {
          
             if(err) {
                 res.status(401).send('URL has been Expired');
                 return;
             }
-
             decoded = {...decoded,Joineddate:moment().format('llll'),isActive:true};
             delete decoded['iat']
+            const {email} = decoded
+            const userExist = await dbInstance().collection('users').find({email}).toArray();
+            console.log(userExist);
+            if(userExist.length !== 0) {
+                res.status(401).send('User Already Been Registered');
+                return;
+            }
             dbInstance().collection('users').insertOne(decoded,async (err,result) => {
                 if(err) {
                     res.status(400).send('User Not Registered');
                     return;
                 }
-                const {userName,role} = result;
-                const token = await tokenGen({
+                const {ops} = result;
+                const [{userName,role}] = ops;
+                const userToken = await tokenGen({
                     userName,
                     role
                 },"6h");
@@ -102,7 +110,7 @@ exports.activationRequest = async (req,res) => {
                     message:`Welcome ${userName}`,
                     value:{
                         role,
-                        token
+                        userToken
                     }
                 })
             })

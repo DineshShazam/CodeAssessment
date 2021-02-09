@@ -1,8 +1,8 @@
-import React,{useEffect}from 'react';
+import React,{useEffect} from 'react';
 import logo from '../../Images/logo.png';
 import Tilt from 'react-parallax-tilt';
-import { Link, useHistory, useLocation } from 'react-router-dom';
-import { isAuth } from '../../utils/isAuth';
+import { Link,useLocation,useHistory } from 'react-router-dom';
+import { isAdmin, isAuth } from '../../utils/isAuth';
 import { AppBar,Button, Toolbar, Typography, makeStyles } from "@material-ui/core";
 import headersData from '../../routes/menu';
 
@@ -10,6 +10,9 @@ import headersData from '../../routes/menu';
 const useStyles = makeStyles(() => ({
   header: {
     backgroundColor: "#400CCC",
+    display:'flex',
+    flexDirection:'column'
+
   },
   logoStyle:{
     fontFamily: "Work Sans, sans-serif",
@@ -29,33 +32,55 @@ const useStyles = makeStyles(() => ({
   }
 }))
 
+
 const Navbar = () => {
 
-  const { header, logoStyle,toolbar,menuButton } = useStyles();
   const history = useHistory();
-  const location = useLocation();
+  const logout = () => {
+    localStorage.clear('token');
+    history.push('/user/login')
+  }
 
-  useEffect(() => {
-    localStorage.removeItem('token');
-    history.push('/user/login');
-  },[location.pathname === '/logout'])
-
-  // const logout = () => {
-  //   localStorage.removeItem('token');
-  //   history.push('/user/login');
-  // }
+  const { header, logoStyle,toolbar,menuButton } = useStyles();
  
-
   const displayHeader = () => {
     return (
     <Toolbar className={toolbar}>
       {sdkAppLogo}
-      {getMenu()}
+      {
+        isAdmin() === 'User' ? 
+        getUserMenu() :
+        getAdminMenu()
+      }
+      {
+        <Button variant="contained" color="secondary" onClick={logout}>LogOut</Button>
+      }
     </Toolbar>
     )
   }
 
-  const getMenu = () => {
+  const getUserMenu = () => {
+
+    return headersData.filter((val) => {
+      return val.permission === isAdmin()
+    }).map(({label,href}) => {
+      return (
+        <Button {...{
+          key: label,
+          color:'inherit',
+          to: href,
+          component: Link,
+          className: menuButton,
+        }}
+        >
+          {label}
+        </Button>
+      )
+    })
+  }
+
+  const getAdminMenu = () => {
+
     return headersData.map(({label,href}) => {
       return (
         <Button {...{
@@ -63,7 +88,7 @@ const Navbar = () => {
           color:'inherit',
           to: href,
           component: Link,
-          className: menuButton
+          className: menuButton,
         }}
         >
           {label}
@@ -79,26 +104,6 @@ const Navbar = () => {
     </Typography>
     </>
   );
-
-  // <div style={{float:'right'}}>
-  //           <nav onClick={logout} >
-  //             <p style={{
-  //               backgroundColor: '#FF5EDF',
-  //               borderRadius: '10px',
-  //               cursor: 'pointer',
-  //               border: 'none',
-  //               color: 'white',
-  //               padding: '15px 32px',
-  //               textAlign: 'center',
-  //               textDecoration: 'none',
-  //               display: 'inline-block',
-  //               fontSize: '16px',
-  //               marginRight: '40px',
-  //               marginTop: '34px'
-  //             }}>Sign Out</p>
-  //           </nav>
-
-  //           </div>
 
   return (
     <>
@@ -120,6 +125,7 @@ const Navbar = () => {
           <AppBar className={header}>
             {displayHeader()}
           </AppBar>
+          
 
       }
     </>

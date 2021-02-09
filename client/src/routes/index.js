@@ -19,7 +19,7 @@ const routes = [
     },
     {
         path:'/user/activate/:token',
-        component:AccountActivation,
+        component: AccountActivation,
         title: 'USer Activation',
         needsAuth:false
     },

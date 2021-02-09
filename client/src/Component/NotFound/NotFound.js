@@ -6,7 +6,7 @@ export default function NotFound() {
         <div>
             <h1>404</h1>
             <p>Oops! Something is wrong.</p>
-            <Link  class="button" to="/Home"><i class="icon-home"></i> Go back to Home page.</Link>
+            <Link  className="button" to="/Home"><i className="icon-home"></i> Go back to Home page.</Link>
         </div>
     )
 }

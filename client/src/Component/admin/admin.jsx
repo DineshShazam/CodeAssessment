@@ -70,7 +70,7 @@ export default function Admin() {
 
     return (
         <>
-        <div style={{maxWidth:"100%"}}>
+        <div style={{maxWidth:"100%",marginTop:'135px'}}>
            <MaterialTable
             actions={[{
                 icon:()=> <AccountCircleIcon />,
@@ -83,20 +83,27 @@ export default function Admin() {
             
             columns={[    
             {
-                title:"userName",
+                title:"UserName",
                 field:"userName"
             },
             {
-                title:"email",
+                title:"Email",
                 field:"email"
             },
             {
-                title:"role",
+                title:"Role",
                 field:"role"
             },
             {
-                title:"Joineddate",
+                title:"Joined Date",
                 field:"Joineddate"
+            },
+            {
+                title:"User Status",
+                field:"isActive",
+                render: rowData => rowData.isActive === true ?
+                'Active' :
+                'InActive'
             },
             {
                 title:"isActive",

@@ -9,6 +9,7 @@ import {isAdmin, isAuth} from './utils/isAuth';
 import Navbar from './Component/NavBar/navbar';
 import NotFound from './Component/NotFound/NotFound';
 
+
 const RenderRoute = ({...route}) => {
   const history = useHistory();
   console.log('private method called')
@@ -35,13 +36,13 @@ const RenderRoute = ({...route}) => {
 const AdminRoute = ({role,...route}) => {
   const history = useHistory();
   console.log('admin method called');
-  if(route.needsAuth && !isAuth().isLogged && (isAdmin() === 'user' || isAdmin() === null)) {
+  if(route.needsAuth && !isAuth().isLogged && (isAdmin() === 'User' || isAdmin() === null)) {
     console.log('Inside If')
    history.push('/user/login');
    return (
      <div></div>
    )
-  } else if(route.needsAuth && isAuth().isLogged && isAdmin() === 'admin') {
+  } else if(route.needsAuth && isAuth().isLogged && isAdmin() === 'Admin') {
     console.log('Inside If 1')
     console.log(isAdmin());
     return (
@@ -64,15 +65,17 @@ function App({history}) {
     });
   },[])
 
-
   return (
     <div className="App">
-      <div className='navBar__Style'>
+     
         <Navbar/>
-      </div>
-      <Switch>
+  
+      <Switch> 
         <Redirect exact from='/' to='/user/login' />
-          
+        {/* <Route path='/user/login' exact render={props => <Login {...props} />} />
+        <Route path='/user/register' exact render={props => <Login {...props} />} />
+        <Route path='/user/activate/:token' exact render={props => <AccountActivation {...props} />} /> */}
+
               {
               routes?.filter((val) => {
                 return val.role !== 'admin'

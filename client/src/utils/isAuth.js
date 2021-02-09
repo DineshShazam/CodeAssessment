@@ -19,9 +19,7 @@ export const isAdmin = () => {
     const APItoken = localStorage.getItem('token');
     if(APItoken) {
         const decoded = jwt_decode(APItoken);
-        console.log(decoded);
         const {role} = decoded;
-        console.log(role);
         if(role) {
             return role;
         } else {
@@ -31,4 +29,9 @@ export const isAdmin = () => {
         return null;
     }
      
+}
+
+export const logout = () => {
+    localStorage.clear('token');
+    window.location.href = '/user/login';
 }
