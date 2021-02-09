@@ -1,26 +1,28 @@
-const { object } = require("joi");
 const Joi = require("joi");
 const { dbInstance } = require("../db_driver/dbDriver");
 const mailer = require("../Handler/Mailer/mailer");
 
 
 exports.listUsers = (req,res) => {
-    var db = dbInstance();
-    db.collection('users').find().toArray((err,result) => {
+    //var db = dbInstance();
+    dbInstance().collection('users').find({}).toArray((err,result) => {
         if(err) {
             res.status(400).send('Unable to list the Users');
             return;
         }
-        const {_id,userName,email,role,JoinedDate,isActive} = result[0];
-        const userList = {
-            _id,
+      const value =  result.map((value) => {
+       const {_id:id,userName,email,role,Joineddate,isActive} = value;
+        return {
+            id,
             userName,
             email,
             role,
-            JoinedDate,
+            Joineddate,
             isActive
         }
-        res.status(200).json(userList);
+        })
+        
+        res.status(200).json(value);
     })
 }
 
@@ -39,8 +41,7 @@ exports.updateUserStatus = (req,res) => {
     }
     const {email,isActive} = value;
     if(isActive === 'deactivate') {
-        var db = dbInstance();
-       db.collection('users').updateOne({email},{$set:{isActive:false}},(err,result) => {
+        dbInstance().collection('users').updateOne({email},{$set:{isActive:false}},(err,result) => {
            if(err) {
                res.status(400).send('User deactivation failed');
                return;
@@ -64,8 +65,7 @@ exports.updateUserStatus = (req,res) => {
        }) 
     }
      else if(isActive === 'activate') {
-        var db = dbInstance();
-        db.collection('users').updateOne({email},{$set:{isActive:true}},(err,result) => {
+        dbInstance().collection('users').updateOne({email},{$set:{isActive:true}},(err,result) => {
             if(err) {
                 res.status(400).send('User deactivation failed');
                 return;
@@ -102,8 +102,7 @@ exports.updateRole = (req,res) => {
         return;
     }
     const {email,role} = req.body;
-        var db = dbInstance();
-       db.collection('users').updateOne({email},{$set:{role:role}},(err,result) => {
+        dbInstance().collection('users').updateOne({email},{$set:{role:role}},(err,result) => {
            if(err) {
                res.status(400).send('User role change failed');
                return;
