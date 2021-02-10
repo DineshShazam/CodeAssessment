@@ -25,7 +25,7 @@ app.engine('hbs', handlebars({
 connectToServer((err,client) => {
 
     if(err) {
-        console.log('Database Connection error');
+        return new Error('Databse Connection Error');
     }
 
     app.use(bodyParser.json());

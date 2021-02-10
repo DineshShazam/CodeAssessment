@@ -33,7 +33,6 @@ export default function Admin() {
     
     const updateRole = async (userName,email,role) => {
         const newRole = (role === 'Admin' ? 'User' : 'Admin'); 
-        console.log(newRole);
         const res = await updateRoleAPI({userName,email,role:newRole});
         toast.success(res);
         userDataFetch();

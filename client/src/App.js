@@ -14,7 +14,6 @@ const RenderRoute = ({...route}) => {
   const history = useHistory();
   console.log('private method called')
   if(route.needsAuth && !isAuth().isLogged) {
-    console.log('push method called');
    history.push('/user/login');
    return (
      <div></div>
@@ -35,15 +34,12 @@ const RenderRoute = ({...route}) => {
 
 const AdminRoute = ({role,...route}) => {
   const history = useHistory();
-  console.log('admin method called');
   if(route.needsAuth && !isAuth().isLogged && (isAdmin() === 'User' || isAdmin() === null)) {
-    console.log('Inside If')
    history.push('/user/login');
    return (
      <div></div>
    )
   } else if(route.needsAuth && isAuth().isLogged && isAdmin() === 'Admin') {
-    console.log('Inside If 1')
     console.log(isAdmin());
     return (
       <Route
@@ -53,8 +49,6 @@ const AdminRoute = ({role,...route}) => {
       ></Route>
     )
   }
-  console.log('OutSide If ')
-
 }
 
 function App({history}) {
@@ -72,13 +66,9 @@ function App({history}) {
   
       <Switch> 
         <Redirect exact from='/' to='/user/login' />
-        {/* <Route path='/user/login' exact render={props => <Login {...props} />} />
-        <Route path='/user/register' exact render={props => <Login {...props} />} />
-        <Route path='/user/activate/:token' exact render={props => <AccountActivation {...props} />} /> */}
-
               {
               routes?.filter((val) => {
-                return val.role !== 'admin'
+                return val.role !== 'Admin'
               }).map((route,index) => (
                 <RenderRoute {...route} key={index} />
               ))
@@ -87,7 +77,7 @@ function App({history}) {
           
               {
                 routes?.filter((val) => {
-                  return val.role !== 'user'
+                  return val.role !== 'User'
                 }).map((route,index) => (
                   <AdminRoute {...route} key={index} />
                 ))

@@ -37,7 +37,6 @@ exports.register = async (req,res) => {
         saltkey,
         role
     }
-    console.log(params);
     const token = await tokenGen(params,"5m");
 
     if(token) {

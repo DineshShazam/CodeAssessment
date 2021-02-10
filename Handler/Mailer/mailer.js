@@ -28,20 +28,17 @@ const mailer = (mailParams, mailData) => {
                     })
 
                     transport.verify((error, success) => {
-                        if (error) {
-                            console.log(error);
+                        if (error) {    
                             reject(new Error('Transport Creation Failed'));
                         }
                         transport.sendMail(MailParam, (error, sent) => {
-                            if (error) {
-                                console.log(error);
+                            if (error) {      
                                 reject(new Error('Mail Not Sent'));
                             }
                             resolve(sent);
                         })
                     })
                 } catch (error) {
-                    console.log(error);
                     reject(new Error('Mailing Service Not available'));
                 }
 
