@@ -24,21 +24,19 @@ exports.register = async (req,res) => {
     const {userName,email,password,role} = req.body;
     const collection = process.env.AUTH_COLLECTIONS;
     const result = await dbInstance().collection(collection).find({email}).toArray();
-    console.log(result);
     if(result.length !== 0) {
-        res.status(200).send('Email has been Already Regsitered');
+        res.status(400).send('Email has been Already Regsitered');
         return;
     }
     const {encryptedData,saltkey} = await hash(password);
 
     const params = {
-        userName,
+        userName, 
         email,
         encryptedData,
         saltkey,
         role
     }
-
     const token = await tokenGen(params,"5m");
 
     if(token) {
@@ -46,16 +44,12 @@ exports.register = async (req,res) => {
             from:process.env.EMAIL_USER,
             to:email,
             subject:'Account Activation Link',
-            html:` 
-                    <h1>Please use the following to activate your account</h1>
-                    <p>${process.env.CLIENT_URL}/user/activate/${token}</p>
-                    <hr />
-                    <p>URL expires in 10 minutes</p>
-                    <p>This email may containe sensetive information</p>
-                    <p>${process.env.CLIENT_URL}</p>    
-                `
+            path:'view_template/layout/mailConfirm.hbs',
         }
-        mailer(mailParams);
+        const mailData = {
+            url:`${process.env.CLIENT_URL}/user/activate/${token}`
+        }
+        mailer(mailParams,mailData);
         res.status(200).json({
             message:'Activation Mail Sent',
             value:'success' 
@@ -90,7 +84,6 @@ exports.activationRequest = async (req,res) => {
             delete decoded['iat']
             const {email} = decoded
             const userExist = await dbInstance().collection('users').find({email}).toArray();
-            console.log(userExist);
             if(userExist.length !== 0) {
                 res.status(401).send('User Already Been Registered');
                 return;
@@ -134,6 +127,11 @@ exports.login = async (req,res) => {
     const userExist = await dbInstance().collection('users').find({email}).toArray();
     if(userExist.length === 0) {
         res.status(401).send('Invalid Email');
+        return;
+    }
+    const {isActive} = userExist[0];
+    if(isActive === false) {
+        res.status(401).send('Your Account Has been Deactivated');
         return;
     }
     const {userName,role,encryptedData,saltkey} = userExist[0];

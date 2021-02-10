@@ -1,7 +1,9 @@
 import AccountActivation from '../Component/AccountActivation/accountActivation';
 import Admin from '../Component/admin/admin';
+import AdminRegister from '../Component/admin/adminRegister';
 import Login from '../Component/Authentication/login';
 import Home from '../Component/Home/home';
+
 
 
 const routes = [
@@ -27,14 +29,21 @@ const routes = [
         path:'/home',
         component:Home,
         title: 'Home',
-        role:'user',
+        role:'User',
         needsAuth:true
     },
     {
         path:'/admin/listUser',
         component:Admin,
         title:'List User',
-        role:'admin',
+        role:'Admin',
+        needsAuth:true
+    },
+    {
+        path:'/admin/register',
+        component:AdminRegister,
+        title:'Register Admin',
+        role:'Admin',
         needsAuth:true
     }
 ]

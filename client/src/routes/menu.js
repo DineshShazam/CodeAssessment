@@ -9,6 +9,11 @@ const headersData = [
         href: "/admin/listUser",
         permission:'Admin'
       },
+      {
+        label: "Register",
+        href: "/admin/register",
+        permission:'Admin'
+    },
     {
         label: "Post",
         href: "/home",

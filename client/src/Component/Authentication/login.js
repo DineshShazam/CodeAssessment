@@ -29,9 +29,7 @@ const Login = ({location}) => {
     const onRegister = async (data,e) => {
       e.preventDefault();
         showLoading();
-        location.pathname === '/user/register' ? data.role = 'User' 
-        : location.pathname === '/admin/register' ? data.role = 'Admin' 
-        : data.role = 'User'
+        data.role = 'User'
         const res = await registerAPI(data);
         if (!res) { hideLoading(); return }
         hideLoading();
@@ -85,7 +83,10 @@ const Login = ({location}) => {
                   errors.email && <div className='validationBox'>{errors.email.message}</div>
                 }
 
-                <input type="password" id="password" className="fadeIn third" name="password" ref={register({ required: { value: true, message: 'Password Must' } })} placeholder="password" />
+                <input type="password" id="password" className="fadeIn third" name="password" ref={register({ 
+                  required: { value: true, message: 'Password Must' },
+                  minLength : {value:8,message: 'Mustbe atleast 8 Character'}
+                   })} placeholder="password" />
                 {
                   errors.password && <div className='validationBox'>{errors.password.message}</div>
                 }
@@ -98,9 +99,13 @@ const Login = ({location}) => {
                 {
                   errors.username && <div className='validationBox'>Please Enter UserName</div>
                 }
-                <input type="password" id="password" className="fadeIn third" name="password" ref={register({ required: true })} placeholder="password" />
+                <input type="password" id="password" className="fadeIn third" name="password" ref={register({ 
+                  required: { value:true,message:'Please Enter Your Password'},
+                  minLength : {value:8,message: 'Mustbe atleast 8 Character'}
+                  
+                  })} placeholder="password" />
                 {
-                  errors.password && <div className='validationBox'>'Please Enter Password</div>
+                  errors.password && <div className='validationBox'>{errors.password.message}</div>
                 }
                 <input type="email" id="password" className="fadeIn" name="email" ref={register({
                   required: {
