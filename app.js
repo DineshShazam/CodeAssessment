@@ -4,6 +4,7 @@ const app = express();
 const cors = require('cors');
 const bodyParser = require('body-parser'); 
 app.use(bodyParser.json());
+const handlebars = require('express-handlebars');
 const userRouter = require('./routes/userRoute');
 const adminRouter = require('./routes/adminRoute');
 const { connectToServer } = require('./db_driver/dbDriver');
@@ -13,6 +14,13 @@ if(process.env.NODE_ENV == 'development') {
         origin:process.env.CLIENT_URL
     }))
 }
+
+app.set('view engine', 'hbs');
+
+app.engine('hbs', handlebars({
+  layoutsDir: './view_template/layout',
+  extname: 'hbs',
+}));
 
 connectToServer((err,client) => {
 

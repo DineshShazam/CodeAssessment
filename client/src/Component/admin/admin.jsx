@@ -31,23 +31,22 @@ export default function Admin() {
         ))
     }
     
-    console.log(newColumn);
-    const updateRole = async (email,role) => {
+    const updateRole = async (userName,email,role) => {
         const newRole = (role === 'Admin' ? 'User' : 'Admin'); 
         console.log(newRole);
-        const res = await updateRoleAPI({email,role:newRole});
+        const res = await updateRoleAPI({userName,email,role:newRole});
         toast.success(res);
         userDataFetch();
     }
 
-    const confirmation = (email,role) => {
+    const confirmation = ({email,userName,role}) => {
         confirmAlert({
             title: 'Confirm To Submit',
             message: `Are you sure to Update to ${(role === 'Admin') ? 'User' : 'Admin' }`,
             buttons:[
                 {
                     label:'yes',
-                    onClick: () => {updateRole(email,role)}
+                    onClick: () => {updateRole(userName,email,role)}
                 },
                 {
                     label:'no',
@@ -57,13 +56,14 @@ export default function Admin() {
         })
     }
 
-    const userActivation = (email,userStatus) => {
+    const userActivation = async ({email,userName},userStatus) => {
         showLoading();
         const value = {
+            userName,
             email,
             isActive:userStatus
         }
-        const res = updateStatus(value)
+        const res = await updateStatus(value)
         toast.success(res);
         userDataFetch();
     }
@@ -76,8 +76,7 @@ export default function Admin() {
                 icon:()=> <AccountCircleIcon />,
                 tooltip: 'Update User Role',
                 onClick:(event,rowData) => {
-                    const {email,role} = rowData;
-                    confirmation(email,role);
+                    confirmation(rowData);
                 }
             }]}
             
@@ -109,8 +108,8 @@ export default function Admin() {
                 title:"isActive",
                 field:"isActive",
                 render: rowData => rowData.isActive === true ? 
-                <Button onClick={(e) => userActivation(rowData.email,'deactivate')} variant="contained" color="primary">DeActivate</Button> :
-                <Button onClick={(e) => userActivation(rowData.email,'activate')} variant="contained" color="primary">Activate</Button>
+                <Button onClick={(e) => userActivation(rowData,'deactivate')} variant="contained" color="primary">DeActivate</Button> :
+                <Button onClick={(e) => userActivation(rowData,'activate')} variant="contained" color="primary">Activate</Button>
             }]}
             data={
                 users.map((val) => {

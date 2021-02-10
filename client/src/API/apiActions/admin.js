@@ -23,6 +23,7 @@ export const updateStatus = async (value) => {
 }
 
 export const updateRoleAPI = async (value) => {
+    console.log(value);
     try {
         const res = await axios().put('/admin/updateRole',value);
         return res.data;

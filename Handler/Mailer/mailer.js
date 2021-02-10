@@ -1,53 +1,55 @@
-const nodemailer = require('nodemailer')
+const nodemailer = require('nodemailer');
+const fs = require('fs');
+const handlebars = require('handlebars');
+const path = require('path');
 
-const mailer = (mailData) => {
-    return new Promise((resolve,reject) => {
-        try {
-            const transport = nodemailer.createTransport({
-               service:'gmail',
-               auth: {
-                   user:process.env.EMAIL_USER,
-                   pass:process.env.EMAIL_PASSWORD
-               }
-            })
-        
-            transport.verify((error,success) => {
-                if(error) {
+const mailer = (mailParams, mailData) => {
+    return new Promise((resolve, reject) => {
+        fs.readFile(path.join(__dirname, `../../${mailParams.path}`), { encoding: 'utf-8' }, (err, stringValue) => {
+
+            if (err) {
+                reject(new Error(`Error in Reading File, ${err}`));
+            } else {
+                try {
+                    const template = handlebars.compile(stringValue);
+                    const _html = template(mailData);
+                    const MailParam = {
+                        from:mailParams.from,
+                        to:mailParams.to,
+                        subject:mailParams.subject,
+                        html: _html,
+                    };
+                    const transport = nodemailer.createTransport({
+                        service: 'gmail',
+                        auth: {
+                            user: process.env.EMAIL_USER,
+                            pass: process.env.EMAIL_PASSWORD
+                        }
+                    })
+
+                    transport.verify((error, success) => {
+                        if (error) {
+                            console.log(error);
+                            reject(new Error('Transport Creation Failed'));
+                        }
+                        transport.sendMail(MailParam, (error, sent) => {
+                            if (error) {
+                                console.log(error);
+                                reject(new Error('Mail Not Sent'));
+                            }
+                            resolve(sent);
+                        })
+                    })
+                } catch (error) {
                     console.log(error);
-                    reject(new Error('Transport Creation Failed'));
+                    reject(new Error('Mailing Service Not available'));
                 }
-                transport.sendMail(mailData,(error,sent) => {
-                    if(error) {
-                        console.log(error);
-                        reject(new Error('Mail Not Sent'));
-                    }
-                    resolve(sent);
-                })
-            })
-        } catch (error) {
-            console.log(error);
-            reject(new Error('Mailing Service Not available'));
-        }   
-    })
-    
+
+            }
+        });
+
+    });
+
 }
 
 module.exports = mailer;
-
-
-// sgMail.send(mailData).then((result) => {
-//     console.log(result);
-//     return result
-// }).catch((error) => {
-//     //Log friendly error
-// console.log(error.toString());
-// console.log(output)
-
-// //Extract error msg
-// const {message, code, response} = error;
-
-// //Extract response msg
-// const {headers, body} = response;
-// console.log(body);
-//     return new Error('Mail Transportation Error');
-// })
