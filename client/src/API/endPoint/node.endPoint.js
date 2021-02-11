@@ -20,11 +20,11 @@ const axiosInstance = () => {
     AxiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     AxiosInstance.defaults.headers.post['Content-Type'] = 'application/json';
 
-    AxiosInstance.interceptors.request.use((request) => {
-        return request;
-    },error => {
-        return Promise.reject(error);
-    })
+    // AxiosInstance.interceptors.request.use((request) => {
+    //     return request;
+    // },error => {
+    //     return Promise.reject(error);
+    // })
 
 
     AxiosInstance.interceptors.response.use(
@@ -32,7 +32,7 @@ const axiosInstance = () => {
         return Promise.resolve(response);
     } ,
     (error) => {
-        // client side error 
+        // Server side error 
         if(!error.response) {
             return Promise.reject(error);
         }

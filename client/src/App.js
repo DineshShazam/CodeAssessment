@@ -12,7 +12,6 @@ import NotFound from './Component/NotFound/NotFound';
 
 const RenderRoute = ({...route}) => {
   const history = useHistory();
-  console.log('private method called')
   if(route.needsAuth && !isAuth().isLogged) {
    history.push('/user/login');
    return (
@@ -40,7 +39,6 @@ const AdminRoute = ({role,...route}) => {
      <div></div>
    )
   } else if(route.needsAuth && isAuth().isLogged && isAdmin() === 'Admin') {
-    console.log(isAdmin());
     return (
       <Route
         path={route.path}

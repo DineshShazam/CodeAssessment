@@ -12,5 +12,9 @@ module.exports = {
 
   dbInstance: () => {
     return _db;
+  },
+
+  closeClient:() => {
+    return _db.close();
   }
 } 
