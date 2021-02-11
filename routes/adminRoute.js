@@ -6,6 +6,6 @@ const { tokenVerify } = require('../Handler/JWT_Auth/jwt');
 
 adminRouter.get('/listUsers',tokenVerify,errorHandler(listUsers));
 adminRouter.put('/isActive',tokenVerify,errorHandler(updateUserStatus));
-adminRouter.put('/updateRole',errorHandler(updateRole));
+adminRouter.put('/updateRole',tokenVerify,errorHandler(updateRole));
 
 module.exports = adminRouter; 
